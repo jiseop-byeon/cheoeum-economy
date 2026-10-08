@@ -84,6 +84,46 @@ function home() {
       <p class="kicker">정책과 시장을 읽기 위한 기초</p>
       <h1>경제를 처음 보는 사람을 위한 강의.</h1>
       <p class="dek">월급과 물가에서 시작합니다. 금리와 은행, 한국은행으로 올라간 뒤 경기와 재정, 환율을 지나고, 그다음에 채권, 주식, 집, 가상자산을 읽습니다. 계산은 빼지 않습니다. 용어 787개는 강의 옆의 카드입니다.</p>
+      <figure class="atlas">
+        <p class="kicker">한 장의 지도</p>
+        <h2>네 곳이 주고받고, 그 값에 이름이 붙습니다.</h2>
+        <div class="atlas-board">
+          <a class="place foreign" href="#/lesson/fx">
+            <span class="place-k">외국</span>
+            <span>우리 물건을 사 가거나, 우리에게 팝니다.</span>
+          </a>
+          <p class="flow">수출은 나가고 수입은 들어옵니다. 바꿀 때의 값이 환율입니다.</p>
+          <a class="place home" href="#/lesson/household">
+            <span class="place-k">가계</span>
+            <span>일하고, 벌고, 씁니다.</span>
+          </a>
+          <div class="exchange">
+            <span>일 →</span>
+            <span>← 임금</span>
+            <span>← 상품</span>
+          </div>
+          <a class="place firm" href="#/lesson/map">
+            <span class="place-k">기업</span>
+            <span>사람을 쓰고, 물건을 만듭니다.</span>
+          </a>
+          <p class="flow">세금은 정부로 가고, 정부 지출은 다시 가계와 기업으로 옵니다.</p>
+          <a class="place gov" href="#/lesson/fiscal">
+            <span class="place-k">정부</span>
+            <span>걷어서 쓰고, 모자라면 빚을 집니다.</span>
+          </a>
+          <div class="atlas-core">
+            <a href="#/lesson/prices"><b>물가</b><span>상품의 값</span></a>
+            <a href="#/lesson/rates"><b>금리</b><span>돈의 시간값</span></a>
+            <a href="#/lesson/fx"><b>환율</b><span>외국과 바꿀 때의 값</span></a>
+          </div>
+          <div class="atlas-floor">
+            <a href="#/lesson/banks"><b>금융</b><span>쓰고 남은 돈은 은행, 채권, 주식, 집으로 갑니다.</span></a>
+            <a href="#/lesson/policy"><b>한국은행</b><span>은행끼리 하루짜리 돈을 빌리는 금리를 옮깁니다.</span></a>
+          </div>
+        </div>
+        <p class="atlas-read">뉴스는 이 가운데 한 줄이 커지거나 막힌 이야기입니다. 칸을 누르면 그 강의로 갑니다.</p>
+      </figure>
+      <p class="kicker">이 지도를 읽는 순서</p>
       <ol class="path">
         ${Object.entries(PHASE_LINE).map(([name, line]) => `<li><strong>${esc(name)}</strong><span>${esc(line)}</span></li>`).join("")}
       </ol>

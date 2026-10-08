@@ -15,6 +15,15 @@ function esc(s) {
   }[c]));
 }
 
+function glossLine(t, tag) {
+  const bits = [];
+  if (t.hanja) bits.push(esc(t.hanja));
+  if (t.en) bits.push("(" + esc(t.en) + ")");
+  if (!bits.length) return "";
+  const name = tag || "p";
+  return `<${name} class="gloss">${bits.join(" ")}</${name}>`;
+}
+
 const terms = () => window.TERMS || [];
 const tracks = () => window.TRACKS || [];
 
@@ -94,7 +103,7 @@ function home() {
           </a>
           <p class="flow">수출은 나가고 수입은 들어옵니다. 바꿀 때의 값이 환율입니다.</p>
           <a class="place home" href="#/lesson/household">
-            <span class="place-k">가계</span>
+            <span class="place-k">가계<i class="han">家計</i></span>
             <span>일하고, 벌고, 씁니다.</span>
           </a>
           <div class="exchange">
@@ -103,7 +112,7 @@ function home() {
             <span>← 상품</span>
           </div>
           <a class="place firm" href="#/lesson/map">
-            <span class="place-k">기업</span>
+            <span class="place-k">기업<i class="han">企業</i></span>
             <span>사람을 쓰고, 물건을 만듭니다.</span>
           </a>
           <p class="flow">세금은 정부로 가고, 정부 지출은 다시 가계와 기업으로 옵니다.</p>
@@ -112,13 +121,13 @@ function home() {
             <span>걷어서 쓰고, 모자라면 빚을 집니다.</span>
           </a>
           <div class="atlas-core">
-            <a href="#/lesson/prices"><b>물가</b><span>상품의 값</span></a>
-            <a href="#/lesson/rates"><b>금리</b><span>돈의 시간값</span></a>
-            <a href="#/lesson/fx"><b>환율</b><span>외국과 바꿀 때의 값</span></a>
+            <a href="#/lesson/prices"><b>물가<i class="han">物價</i></b><span>상품의 값</span></a>
+            <a href="#/lesson/rates"><b>금리<i class="han">金利</i></b><span>돈의 시간값</span></a>
+            <a href="#/lesson/fx"><b>환율<i class="han">換率</i></b><span>외국과 바꿀 때의 값</span></a>
           </div>
           <div class="atlas-floor">
-            <a href="#/lesson/banks"><b>금융</b><span>쓰고 남은 돈은 은행, 채권, 주식, 집으로 갑니다.</span></a>
-            <a href="#/lesson/policy"><b>한국은행</b><span>은행끼리 하루짜리 돈을 빌리는 금리를 옮깁니다.</span></a>
+            <a href="#/lesson/banks"><b>금융<i class="han">金融</i></b><span>쓰고 남은 돈은 은행, 채권, 주식, 집으로 갑니다.</span></a>
+            <a href="#/lesson/policy"><b>한국은행<i class="han">韓國銀行</i></b><span>은행끼리 하루짜리 돈을 빌리는 금리를 옮깁니다.</span></a>
           </div>
         </div>
         <p class="atlas-read">뉴스는 이 가운데 한 줄이 커지거나 막힌 이야기입니다. 칸을 누르면 그 강의로 갑니다.</p>
@@ -216,7 +225,7 @@ function termsView(track) {
   return `
     <p class="kicker">용어 ${terms().length}</p>
     <h1>말을 찾고, 강의로 돌아갑니다.</h1>
-    <p class="dek">표제어는 한국은행 『경제금융용어 800선』(2026)을 따릅니다. 설명은 이 사이트가 처음 공부하는 사람을 위해 다시 쓴 문장입니다.</p>
+    <p class="dek">표제어는 한국은행 『경제금융용어 800선』(2026)을 따릅니다. 설명은 이 사이트가 처음 공부하는 사람을 위해 다시 쓴 문장입니다. 한자는 뜻이 갈라지는 말에만 달았고, 영어는 뉴스에서 그 이름으로 만날 때 괄호에 넣었습니다.</p>
     <input class="search" id="q" type="search" placeholder="예: DSR, 환율, 기준금리" value="${esc(q)}" aria-label="용어 검색">
     <div class="chips" id="filters">${chips}</div>
     <div class="term-list" id="list"></div>`;
@@ -227,13 +236,13 @@ function paintTerms(track) {
   const list = terms().filter((t) => {
     if (track && t.track !== track) return false;
     if (!q) return true;
-    return (t.title + t.one + t.body).toLowerCase().includes(q);
+    return (t.title + " " + (t.hanja || "") + " " + (t.en || "") + t.one + t.body).toLowerCase().includes(q);
   });
   const host = document.getElementById("list");
   if (!host) return;
   host.innerHTML = list.slice(0, 400).map((t) => `
     <a class="term-link" href="#/term/${esc(t.id)}">
-      <strong>${esc(t.title)}</strong>
+      <strong>${esc(t.title)}${glossLine(t, "span")}</strong>
       <span class="tag">${esc(trackName(t.track))}</span>
       <span>${esc(t.one)}</span>
     </a>`).join("") || `<p>해당하는 말이 없습니다.</p>`;
@@ -254,6 +263,7 @@ function termView(id) {
     <article class="lesson">
       <p class="kicker">${esc(trackName(t.track))}</p>
       <h1>${esc(t.title)}</h1>
+      ${glossLine(t)}
       <p class="dek">${esc(t.one)}</p>
       ${t.body.split(/(?<=다\.|요\.|까\.|죠\.|니다\.)\s+/).filter(Boolean).map((p) => `<p>${esc(p)}</p>`).join("")}
       <div class="note"><p class="note-kicker">뒤집어서 이해하기 쉬운 점</p><p>${esc(t.watch)}</p></div>
@@ -305,6 +315,7 @@ function paintCard() {
       <p class="meta">${i + 1} / ${q.length} · ${esc(trackName(t.track))}</p>
       <h2>${esc(t.title)}</h2>
       <div id="reveal" hidden>
+        ${glossLine(t)}
         <p>${esc(t.one)}</p>
         <p>${esc(t.body)}</p>
         <p class="meta">${esc(t.watch)}</p>

@@ -76,6 +76,16 @@ h1 { font-size: clamp(36px, 6vw, 58px); margin: 0 0 14px; }
 h2 { font-size: 30px; margin: 34px 0 10px; }
 h3 { font-size: 22px; margin: 26px 0 8px; }
 .dek { font-size: 19px; color: var(--muted); margin: 0 0 22px; }
+.gloss {
+  font-family: var(--serif); color: var(--gold); font-size: 18px;
+  margin: -6px 0 14px; letter-spacing: 0.03em;
+}
+.term-link .gloss { display: block; font-size: 14px; font-weight: 400; margin: 2px 0 0; color: var(--gold); }
+.han {
+  display: block; font-style: normal; font-weight: 400;
+  font-size: 13px; letter-spacing: 0.08em; color: var(--gold); margin-top: 2px;
+}
+.atlas-core .han, .atlas-floor .han, .place-k .han { font-weight: 400; }
 .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 .btn, .btn-quiet {
   display: inline-flex; align-items: center; justify-content: center;

@@ -261,6 +261,18 @@ th { font-weight: 650; }
 }
 .progress > span { display: block; height: 100%; background: var(--accent); }
 
+.count { font-style: normal; color: var(--warm); font-family: var(--mono); font-size: 13px; margin-left: 6px; }
+.crumbs { font-size: 14px; color: var(--muted); margin: -4px 0 6px; }
+.crumbs a { color: var(--muted); }
+.crumbs span { color: var(--text); }
+.updown { margin: 0 0 18px; }
+.chip small { color: var(--muted); font-size: 12px; margin-left: 4px; }
+.article h2 { font-size: 26px; margin: 40px 0 6px; padding-top: 14px; border-top: 1px solid var(--line); }
+.article h3 { font-size: 21px; margin: 26px 0 6px; }
+.article h3 a { color: var(--text); text-decoration: none; border-bottom: 1px solid var(--line-strong); }
+.article h3 a:hover { color: var(--accent-text); border-bottom-color: var(--accent); }
+.article p a, .article li a { color: var(--accent-text); }
+
 @media (max-width: 720px) {
   .top { align-items: flex-start; flex-direction: column; }
   .nav { width: 100%; }

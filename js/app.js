@@ -158,21 +158,10 @@ function setNav(name) {
   });
 }
 
-function home() {
-  const s = load();
-  const order = readingOrder();
-  const next = order.find((a) => !s.lessons.includes(a.id)) || order[0];
-  const started = order.some((a) => s.lessons.includes(a.id));
+function atlasHtml() {
   const go = (domain) => articleOf(domain, 1) ? `#/read/${articleId(domain, 1)}` : "#/learn";
-  const count = (l) => Object.keys(TREE).filter((id) => layerOf(id) === l).length;
   return `
-    <section class="hero">
-      <p class="kicker">큰 그림에서 787개 용어까지</p>
-      <h1>경제를 위에서부터 읽는다.</h1>
-      <p class="dek">가장 중요하고 쉬운 개념에서 시작해 작동 원리와 제도를 지나 세부까지 내려간다. 범위는 한국은행 『경제금융용어 800선』(2026)의 표제어 787개이며, 설명은 이 사이트가 따로 썼다.</p>
       <figure class="atlas">
-        <p class="kicker">0층 · 한 장의 지도</p>
-        <h2>네 곳이 주고받고, 그 값에 이름이 붙는다.</h2>
         <div class="atlas-board">
           <a class="place foreign" href="${go("world")}">
             <span class="place-k">외국</span>
@@ -208,24 +197,37 @@ function home() {
           </div>
         </div>
         <p class="atlas-read">뉴스는 이 가운데 한 줄이 커지거나 막힌 이야기이다. 칸을 누르면 그 분야의 1층 글로 간다.</p>
-      </figure>
-      <p class="kicker">이 지도에서 내려가는 네 층</p>
-      <ol class="path">
-        ${[1, 2, 3, 4].map((l) => `<li><strong>${l}층 ${esc(LAYERS[l].name)}</strong><span>${esc(LAYERS[l].line)} <em class="count">${count(l)}개</em></span></li>`).join("")}
-      </ol>
+      </figure>`;
+}
+
+function home() {
+  const s = load();
+  const order = readingOrder();
+  const next = order.find((a) => !s.lessons.includes(a.id)) || order[0];
+  const started = order.some((a) => s.lessons.includes(a.id));
+  const count = (l) => Object.keys(TREE).filter((id) => layerOf(id) === l).length;
+  const firstOf = (l) => order.find((a) => a.layer === l);
+  return `
+    <section class="home">
+      <h1>경제를 위에서부터 읽는다.</h1>
+      <p class="dek">가장 중요한 개념에서 시작해 세부까지, 『경제금융용어 800선』의 787개 말을 네 층으로 내려간다.</p>
       <div class="row">
-        ${next ? `<a class="btn" href="#/read/${esc(next.id)}">${started ? "이어서" : "1층부터"} · ${esc(next.title)}</a>` : ""}
-        <a class="btn-quiet" href="#/learn">층별 목록</a>
+        ${next ? `<a class="btn" href="#/read/${esc(next.id)}">${started ? "이어서 읽기" : "1층부터 읽기"}</a>` : ""}
+        <a class="btn-quiet" href="#/learn">전체 목록</a>
       </div>
-    </section>
-    <div class="grid">
-      <a class="card" href="#/learn"><span class="no">개념</span><h3>층과 분야로 나눈 40편의 글</h3><p>열 개 분야를 네 층으로 내려가며 787개 말을 하나도 빼지 않고 설명한다.</p></a>
-      <a class="card" href="#/terms"><span class="no">용어 787</span><h3>말을 찾고, 위아래로 옮겨 간다</h3><p>카드마다 한 층 위의 말과 더 깊은 말이 이어져 있다. 문장은 책의 해설이 아니다.</p></a>
-      <a class="card" href="#/sources"><span class="no">출처</span><h3>숫자는 기관 페이지에서 본다</h3><p>한국은행, 통계청, 기재부, 금융위원회, 예금보험공사, 연준, IMF, OECD, BIS.</p></a>
-    </div>
-    <section class="note">
-      <p class="note-kicker">이 사이트가 하지 않는 일</p>
-      <p>종목을 고르거나 지금 사라고 말하지 않는다. 대출 한도의 실제 산식, 세금, 상품 약관은 해당 기관과 금융회사의 최신 자료를 따른다. 여기의 계산은 개념을 보기 위한 식이다.</p>
+      <ol class="ladder">
+        ${[1, 2, 3, 4].map((l) => {
+          const f = firstOf(l);
+          return `<li><a href="${f ? `#/read/${esc(f.id)}` : "#/learn"}">
+            <span class="ladder-no">${l}층</span>
+            <span class="ladder-body"><strong>${esc(LAYERS[l].name)}</strong><span>${esc(LAYERS[l].line)}</span></span>
+            <span class="ladder-count">${count(l)}</span>
+          </a></li>`;
+        }).join("")}
+      </ol>
+      <form class="home-search" id="home-search" role="search">
+        <input class="search" id="hq" type="search" placeholder="용어 찾기: DSR, 환율, 기준금리" aria-label="용어 검색">
+      </form>
     </section>`;
 }
 
@@ -251,6 +253,12 @@ function learn() {
     <p class="kicker">개념</p>
     <h1>위층부터 한 층씩 내려간다.</h1>
     <p class="dek">층마다 열 개 분야의 글이 있다. 한 층을 모든 분야에서 읽고 다음 층으로 내려가면 어느 층에서 멈춰도 경제 전체가 보인다. 순서를 바꿔 한 분야를 끝까지 내려가도 된다.</p>
+    <section class="phase-head">
+      <p class="kicker">0층</p>
+      <h2>한 장의 지도</h2>
+      <p>가계, 기업, 정부, 외국이 주고받고, 그 값에 이름이 붙는다. 칸을 누르면 그 분야의 1층 글로 간다.</p>
+    </section>
+    <div class="atlas">${atlasHtml()}</div>
     ${[1, 2, 3, 4].map(floor).join("")}
     <section class="phase-head">
       <p class="kicker">함께 보기</p>
@@ -445,6 +453,12 @@ function render() {
     save(s);
     render();
   };
+  const hs = document.getElementById("home-search");
+  if (hs) hs.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const v = document.getElementById("hq").value.trim();
+    location.hash = v ? `#/terms/${encodeURIComponent(v)}` : "#/terms";
+  });
   if (name === "terms") {
     let domain = domains().some((d) => d.id === arg) ? arg : "";
     let layer = 0;

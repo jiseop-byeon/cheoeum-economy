@@ -152,7 +152,7 @@ function parse() {
 }
 
 function setNav(name) {
-  const map = { home: "#/", learn: "#/learn", read: "#/learn", lesson: "#/learn", terms: "#/terms", term: "#/terms", sources: "#/sources" };
+  const map = { home: "#/", learn: "#/learn", map: "#/learn", read: "#/learn", lesson: "#/learn", terms: "#/terms", term: "#/terms", sources: "#/sources" };
   document.querySelectorAll(".nav a").forEach((a) => {
     a.setAttribute("aria-current", a.getAttribute("href") === map[name] ? "page" : "false");
   });
@@ -233,44 +233,45 @@ function home() {
 
 function learn() {
   const s = load();
-  const floor = (l) => `
-    <section class="phase-head">
-      <p class="kicker">${l}층</p>
-      <h2>${esc(LAYERS[l].name)}</h2>
-      <p>${esc(LAYERS[l].line)}</p>
-    </section>
-    <div class="grid">${domains().map((d) => {
+  const mark = (id) => s.lessons.includes(id) ? `<span class="toc-done">읽음</span>` : "";
+  const floor = (l) => {
+    const rows = domains().map((d) => {
       const a = articleOf(d.id, l);
       const n = membersOf(d.id, l).length;
-      if (!n) return "";
-      const read = a && s.lessons.includes(a.id) ? " · 읽음" : "";
-      return a
-        ? `<a class="card" href="#/read/${esc(a.id)}"><span class="no">${esc(d.name)} · ${n}개${read}</span><h3>${esc(a.title)}</h3><p>${esc(a.dek)}</p></a>`
-        : `<div class="card"><span class="no">${esc(d.name)} · ${n}개</span><h3>준비 중</h3></div>`;
-    }).join("")}</div>`;
+      if (!a || !n) return "";
+      return `<li><a href="#/read/${esc(a.id)}">
+        <span class="toc-domain">${esc(d.name)}</span>
+        <span class="toc-title">${esc(a.title)}</span>
+        <span class="toc-count">${n}${mark(a.id)}</span>
+      </a></li>`;
+    }).join("");
+    const total = Object.keys(TREE).filter((id) => layerOf(id) === l).length;
+    return `
+      <section class="toc-head"><h2><span>${l}층</span> ${esc(LAYERS[l].name)}</h2><p>${esc(LAYERS[l].line)} ${total}개.</p></section>
+      <ol class="toc">${rows}</ol>`;
+  };
   const ls = lessons();
   return `
     <p class="kicker">개념</p>
     <h1>위층부터 한 층씩 내려간다.</h1>
-    <p class="dek">층마다 열 개 분야의 글이 있다. 한 층을 모든 분야에서 읽고 다음 층으로 내려가면 어느 층에서 멈춰도 경제 전체가 보인다. 순서를 바꿔 한 분야를 끝까지 내려가도 된다.</p>
-    <section class="phase-head">
-      <p class="kicker">0층</p>
-      <h2>한 장의 지도</h2>
-      <p>가계, 기업, 정부, 외국이 주고받고, 그 값에 이름이 붙는다. 칸을 누르면 그 분야의 1층 글로 간다.</p>
-    </section>
-    <div class="atlas">${atlasHtml()}</div>
+    <p class="dek">층마다 열 개 분야의 글이 있다. 한 층을 모두 읽고 내려가도 되고, 한 분야를 끝까지 내려가도 된다.</p>
+    <p class="meta"><a href="#/map">0층 · 가계, 기업, 정부, 외국의 주고받음을 한 장으로 보기 →</a></p>
     ${[1, 2, 3, 4].map(floor).join("")}
-    <section class="phase-head">
-      <p class="kicker">함께 보기</p>
-      <h2>계산으로 다시 보기</h2>
-      <p>2층의 원리를 숫자 하나로 직접 계산해 보는 강의 ${ls.length}편이다.</p>
-    </section>
-    <div class="grid">${ls.map((l) => `
-      <a class="card" href="#/lesson/${esc(l.id)}">
-        <span class="no">${esc(l.no)} · ${esc(domainName(l.domain))} · ${l.minutes}분${s.lessons.includes(l.id) ? " · 읽음" : ""}</span>
-        <h3>${esc(l.title)}</h3>
-        <p>${esc(l.dek)}</p>
-      </a>`).join("")}</div>`;
+    <section class="toc-head"><h2>계산으로 다시 보기</h2><p>2층의 원리를 숫자로 직접 계산해 보는 강의 ${ls.length}편.</p></section>
+    <ol class="toc">${ls.map((l) => `<li><a href="#/lesson/${esc(l.id)}">
+      <span class="toc-domain">${esc(domainName(l.domain))}</span>
+      <span class="toc-title">${esc(l.title)}</span>
+      <span class="toc-count">${l.minutes}분${mark(l.id)}</span>
+    </a></li>`).join("")}</ol>`;
+}
+
+function mapView() {
+  return `
+    <p class="kicker">0층</p>
+    <h1>한 장의 지도</h1>
+    <p class="dek">가계, 기업, 정부, 외국이 주고받고, 그 값에 이름이 붙는다. 칸을 누르면 그 분야의 1층 글로 간다.</p>
+    ${atlasHtml()}
+    <p class="meta"><a href="#/learn">← 개념 목록</a></p>`;
 }
 
 function markButton(id, done) {
@@ -431,6 +432,7 @@ function render() {
   const main = document.getElementById("main");
   if (name === "home") main.innerHTML = home();
   else if (name === "learn") main.innerHTML = learn();
+  else if (name === "map") main.innerHTML = mapView();
   else if (name === "read") main.innerHTML = articleView(arg);
   else if (name === "lesson") main.innerHTML = lessonView(arg);
   else if (name === "terms") main.innerHTML = termsView(arg);

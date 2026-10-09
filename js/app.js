@@ -29,6 +29,9 @@ const pillars = () => window.PILLARS || [];
 const domains = () => window.DOMAINS || [];
 const articles = () => window.ARTICLES || [];
 const TREE = window.TREE || {};
+const BOOK_PAGE = "https://www.bok.or.kr/portal/bbs/B0000249/view.do?nttId=10096081&menuNo=200765";
+const BOOK_PDF = "https://www.bok.or.kr/fileSrc/portal/5cbf35f51f3842dd9ed1fba7cef5199a/1/74ac2f04b15c4debac64fd6931aea9fd.pdf";
+const PDF_OFFSET = 18;
 const tracks = () => window.TRACKS || [];
 
 const PATH = [
@@ -399,6 +402,7 @@ function termView(id) {
       ${(t.body || "").split(/(?<=다\.|요\.|까\.|죠\.|니다\.)\s+/).filter(Boolean).map((p) => `<p>${esc(p)}</p>`).join("")}
       ${t.pillar ? `<div class="note"><p class="note-kicker">기둥 개념</p><p>이 말은 『800선』의 표제어가 아니다. 아래의 말들을 한데 묶으려고 이 사이트가 세운 큰 개념이며, 자세한 설명은 1층 글에 있다.</p></div>` : ""}
       ${t.watch ? `<div class="note"><p class="note-kicker">헷갈리기 쉬운 점</p><p>${esc(t.watch)}</p></div>` : ""}
+      ${t.page ? `<p class="source-line">원문: 한국은행 『경제금융용어 800선』(2026) ${t.page}쪽 · <a href="${BOOK_PDF}#page=${t.page + PDF_OFFSET}" target="_blank" rel="noopener">PDF에서 이 쪽 열기</a> · <a href="${BOOK_PAGE}" target="_blank" rel="noopener">한국은행 자료실</a></p>` : ""}
       ${kids.length ? `<h2>더 깊이</h2><div class="chips">${kids.map((k) => `<a class="chip" href="#/term/${esc(k)}">${esc(node(k)?.title || k)} <small>${layerOf(k)}층</small></a>`).join("")}</div>` : ""}
       ${rel ? `<h2>옆에 두면 좋은 말</h2><div class="chips">${rel}</div>` : ""}
       <div class="row">
@@ -417,6 +421,7 @@ function sources() {
     <article class="lesson">
       <p class="kicker">출처</p>
       <h1>숫자는 여기서 다시 확인한다.</h1>
+      <p class="meta">원문 PDF: <a href="${BOOK_PAGE}" target="_blank" rel="noopener">한국은행 『경제금융용어 800선』 다운로드 페이지</a></p>
       <p class="dek">글과 강의에 적은 공표 숫자는 그 날짜의 자료이다. 다음 발표가 나오면 기관 페이지의 숫자를 따른다. 한국은행 책의 문장은 싣지 않았다.</p>
       ${body}
       <div class="note">

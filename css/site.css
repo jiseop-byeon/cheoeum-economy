@@ -315,6 +315,8 @@ th { font-weight: 650; }
 .fig .f-solid-m { fill: var(--line-strong); stroke: none; }
 .fig .f-arrow { fill: var(--text); stroke: none; }
 .fig .f-arrow-a { fill: var(--accent); stroke: none; }
+.source-line { margin: 18px 0 6px; font-size: 14px; color: var(--muted); }
+.source-line a { color: var(--accent-text); }
 .toc-head { margin: 44px 0 8px; }
 .toc-head h2 { font-size: 24px; margin: 0; }
 .toc-head h2 span { color: var(--warm); margin-right: 6px; }

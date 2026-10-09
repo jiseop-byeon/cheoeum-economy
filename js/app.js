@@ -40,7 +40,7 @@ const PATH = [
   { id: "fx", phase: "나라와 세계", why: "외국과 거래하면 환율이 붙습니다. 100달러가 1,300원과 1,400원에서 얼마인지, 숫자가 커지면 누가 이득인지, 삼불원칙과 J커브까지 읽습니다." },
   { id: "bonds", phase: "시장", why: "금리의 가격표가 채권입니다. 1년 뒤 10,000원의 오늘 가격이 금리 5%와 4%에서 9,524원, 9,615원이 되는 계산과, 듀레이션이 그 가격을 얼마나 흔드는지를 봅니다." },
   { id: "stocks", phase: "시장", why: "채권이 약속이라면 주식은 이익의 몫입니다. 같은 주가로 PER, PBR, 배당수익률을 계산하고, 그 배수가 사고팔라는 신호가 아닌 이유를 적습니다." },
-  { id: "housing", phase: "시장", why: "집은 사는 곳이고 가장 큰 대출이 붙는 자산입니다. LTV에 보증금이 더해지는 이유, 전세로 집값 −10%가 내 돈 −50%가 되는 계산, 역전세와 깡통전세의 차이를 구분합니다." },
+  { id: "housing", phase: "시장", why: "집은 사는 곳이고 가장 큰 대출이 붙는 자산입니다. LTV에 보증금이 더해지는 이유, 전세로 집값 −10%가 집주인 돈 −50%가 되는 계산, 역전세와 깡통전세의 차이를 구분합니다." },
   { id: "crypto", phase: "시장", why: "예금, 주식, 코인은 발행하는 주체와 보호가 다릅니다. 비트코인, 스테이블코인, 중앙은행 디지털화폐, 예금토큰, 프로젝트 한강을 가르고, 가상자산이 예금보험 밖인 이유를 남깁니다." },
   { id: "desk", phase: "읽는 법", why: "여기까지 온 단어로 발표 한 장을 읽습니다. 전년과 전월이 같은 달에 동시에 참일 수 있는 이유, 이 사이트를 만든 날 옮겨 적은 공표 세 줄, FedWatch가 연준의 공식 전망이 아닌 이유를 적습니다." },
   { id: "frame", phase: "읽는 법", why: "상품 이름 앞에 네 칸을 둡니다. 기대하는 수익, 잃을 수 있는 폭, 현금이 되는 속도, 돈이 묶이는 시간입니다. 빌린 돈이 있을 때 자산 −10%가 내 돈 −50%가 되는 식을 다시 계산합니다. 종목은 고르지 않습니다." }
@@ -69,6 +69,37 @@ function lessons() {
 const trackName = (id) => tracks().find((t) => t.id === id)?.name || id;
 const byId = (id) => terms().find((t) => t.id === id);
 const byTitle = (title) => terms().find((t) => t.title === title);
+
+function normTitle(s) {
+  return String(s ?? "").normalize("NFKC").replace(/[\u0000-\u001F\u007F\u200B-\u200F\u2060\uFEFF]/g, "").replace(/\s+/g, "").toLowerCase();
+}
+
+function byRelated(name) {
+  const n = normTitle(name);
+  if (!n) return null;
+  const all = terms();
+  const exact = all.filter((t) => normTitle(t.title) === n);
+  if (exact.length === 1) return exact[0];
+  const hits = all.filter((t) => {
+    const tk = normTitle(t.title);
+    if (!tk) return false;
+    if (t.title.split("/").map(normTitle).includes(n)) return true;
+    if (tk.startsWith(n) && /^[(/]/.test(tk.slice(n.length))) return true;
+    if (n.startsWith(tk) && tk.length >= 4 && /^[(/]/.test(n.slice(tk.length))) return true;
+    return false;
+  });
+  const ids = [...new Set(hits.map((h) => h.id))];
+  return ids.length === 1 ? hits[0] : null;
+}
+
+function lessonForTerm(t) {
+  const all = lessons();
+  const byCore = all.find((l) => (l.core || []).includes(t.title));
+  if (byCore) return byCore;
+  const same = all.filter((l) => l.track === t.track);
+  if (!same.length) return null;
+  return same.find((l) => l.id === t.track) || same[same.length - 1];
+}
 
 function parse() {
   const raw = (location.hash || "#/").replace(/^#/, "");
@@ -255,10 +286,10 @@ function termView(id) {
   const s = load();
   const known = s.known.includes(t.id);
   const rel = (t.related || []).map((name) => {
-    const hit = byTitle(name) || terms().find((x) => x.title.startsWith(name) || name.startsWith(x.title));
-    return hit ? `<a class="chip" href="#/term/${esc(hit.id)}">${esc(hit.title)}</a>` : `<span class="chip">${esc(name)}</span>`;
+    const hit = byRelated(name);
+    return hit ? `<a class="chip" href="#/term/${esc(hit.id)}">${esc(hit.title)}</a>` : "";
   }).join("");
-  const lesson = lessons().find((l) => (l.core || []).includes(t.title)) || lessons().find((l) => l.track === t.track);
+  const lesson = lessonForTerm(t);
   return `
     <article class="lesson">
       <p class="kicker">${esc(trackName(t.track))}</p>
@@ -410,6 +441,17 @@ function render() {
   if (name === "review") paintCard();
   window.scrollTo(0, 0);
 }
+
+function setTheme(light) {
+  const root = document.documentElement;
+  if (light) root.dataset.theme = "light"; else delete root.dataset.theme;
+  try { localStorage.setItem("cheoeum-theme", light ? "light" : "dark"); } catch (_) {}
+  const btn = document.getElementById("theme");
+  if (btn) { btn.textContent = light ? "어둡게" : "밝게"; btn.setAttribute("aria-pressed", light ? "true" : "false"); }
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", light ? "#f7f4ec" : "#142033");
+}
+setTheme(document.documentElement.dataset.theme === "light");
+document.getElementById("theme").addEventListener("click", () => setTheme(document.documentElement.dataset.theme !== "light"));
 
 addEventListener("hashchange", render);
 addEventListener("scroll", () => {

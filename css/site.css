@@ -22,6 +22,8 @@
   --icon-bg: #d9b45b;
   --icon-fg: #142033;
   --icon-alt: #eef0f3;
+  --fig2: #7fb6e0;
+  --fig2-soft: #1f3550;
   --sans: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
   --serif: "Nanum Myeongjo", "Apple SD Gothic Neo", serif;
   --mono: "IBM Plex Sans KR", "Pretendard", sans-serif;
@@ -50,6 +52,8 @@
   --icon-bg: #142033;
   --icon-fg: #f7f4ec;
   --icon-alt: #d9b45b;
+  --fig2: #b5652a;
+  --fig2-soft: #f6e6d8;
   color-scheme: light;
 }
 
@@ -290,6 +294,27 @@ th { font-weight: 650; }
 .home-search { margin-top: 36px; }
 .home-search .search { width: 100%; }
 .atlas .atlas-board { margin-top: 12px; }
+.fig { margin: 22px 0 26px; padding: 16px 16px 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+.fig svg { display: block; width: 100%; height: auto; max-height: 420px; }
+.fig figcaption { margin-top: 8px; color: var(--muted); font-size: 14px; line-height: 1.55; }
+.fig text { font-family: var(--sans); fill: var(--text); font-size: 14px; }
+.fig .f-ts { fill: var(--muted); font-size: 12px; }
+.fig .f-tb { font-weight: 700; }
+.fig .f-tl { fill: var(--accent-text); }
+.fig .f-tw { fill: var(--fig2); }
+.fig .f-line { stroke: var(--text); fill: none; stroke-width: 1.6; }
+.fig .f-thin { stroke: var(--line-strong); fill: none; stroke-width: 1; }
+.fig .f-dash { stroke: var(--muted); fill: none; stroke-width: 1.4; stroke-dasharray: 5 4; }
+.fig .f-accent { stroke: var(--accent); fill: none; stroke-width: 2.6; }
+.fig .f-warm { stroke: var(--fig2); fill: none; stroke-width: 2.6; }
+.fig .f-box { fill: var(--surface-2); stroke: var(--line-strong); stroke-width: 1; }
+.fig .f-fa { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.2; }
+.fig .f-fw { fill: var(--fig2-soft); stroke: var(--fig2); stroke-width: 1.2; }
+.fig .f-solid-a { fill: var(--accent); stroke: none; }
+.fig .f-solid-w { fill: var(--fig2); stroke: none; }
+.fig .f-solid-m { fill: var(--line-strong); stroke: none; }
+.fig .f-arrow { fill: var(--text); stroke: none; }
+.fig .f-arrow-a { fill: var(--accent); stroke: none; }
 .toc-head { margin: 44px 0 8px; }
 .toc-head h2 { font-size: 24px; margin: 0; }
 .toc-head h2 span { color: var(--warm); margin-right: 6px; }

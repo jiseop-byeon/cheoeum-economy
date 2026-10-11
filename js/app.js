@@ -212,7 +212,7 @@ function home() {
   const count = (l) => Object.keys(TREE).filter((id) => layerOf(id) === l).length;
   const firstOf = (l) => order.find((a) => a.layer === l);
   return `
-    <section class="home">
+    <section class="landing">
       <h1>경제를 위에서부터 읽는다.</h1>
       <p class="dek">가장 중요한 개념에서 시작해 세부까지, 『경제금융용어 800선』의 787개 말을 네 층으로 내려간다.</p>
       <div class="row">

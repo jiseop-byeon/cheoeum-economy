@@ -335,6 +335,7 @@ h1 .title-gloss { display: block; margin-left: 0; margin-top: 4px; }
 .toc-title { font-size: 16px; }
 .toc-count { font-family: var(--mono); font-size: 13px; color: var(--muted); white-space: nowrap; }
 .toc-done { margin-left: 8px; color: var(--warm); }
+.read-when { margin: 0 6px 0 0; }
 
 @media (max-width: 720px) {
   .top { align-items: flex-start; flex-direction: column; }

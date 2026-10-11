@@ -3,9 +3,22 @@ const KEY = "cheoeum-v1";
 function load() {
   try {
     const s = JSON.parse(localStorage.getItem(KEY));
-    if (s && Array.isArray(s.lessons)) return s;
+    if (s && Array.isArray(s.lessons)) {
+      if (!s.readAt || typeof s.readAt !== "object") s.readAt = {};
+      return s;
+    }
   } catch (_) {}
-  return { lessons: [] };
+  return { lessons: [], readAt: {} };
+}
+function today() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+function readDate(s, id, long) {
+  const v = s.readAt && s.readAt[id];
+  if (!v) return "";
+  const [y, m, d] = v.split("-").map(Number);
+  return long ? `${y}년 ${m}월 ${d}일` : `${y}.${String(m).padStart(2, "0")}.${String(d).padStart(2, "0")}`;
 }
 function save(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (_) {} }
 
@@ -237,7 +250,7 @@ function home() {
 
 function learn() {
   const s = load();
-  const mark = (id) => s.lessons.includes(id) ? `<span class="toc-done">읽음</span>` : "";
+  const mark = (id) => s.lessons.includes(id) ? `<span class="toc-done">읽음${readDate(s, id) ? " " + readDate(s, id) : ""}</span>` : "";
   const floor = (l) => {
     const rows = domains().map((d) => {
       const a = articleOf(d.id, l);
@@ -279,7 +292,9 @@ function mapView() {
 }
 
 function markButton(id, done) {
-  return `<button class="btn" type="button" id="mark" data-id="${esc(id)}">${done ? "읽음 표시를 지우기" : "읽음으로 표시"}</button>`;
+  const s = load();
+  const when = done ? readDate(s, id, true) : "";
+  return `${when ? `<span class="meta read-when">${esc(when)}에 읽음</span>` : ""}<button class="btn${done ? "-quiet" : ""}" type="button" id="mark" data-id="${esc(id)}">${done ? "읽음 표시를 지우기" : "읽음으로 표시"}</button>`;
 }
 
 function withGloss(html) {
@@ -463,7 +478,13 @@ function render() {
   if (mark) mark.onclick = () => {
     const s = load();
     const id = mark.dataset.id;
-    s.lessons = s.lessons.includes(id) ? s.lessons.filter((x) => x !== id) : s.lessons.concat(id);
+    if (s.lessons.includes(id)) {
+      s.lessons = s.lessons.filter((x) => x !== id);
+      delete s.readAt[id];
+    } else {
+      s.lessons = s.lessons.concat(id);
+      s.readAt[id] = today();
+    }
     save(s);
     render();
   };

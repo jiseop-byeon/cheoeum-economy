@@ -91,78 +91,104 @@ window.DOMAINS = [
 window.PILLARS = [
  {
   "id": "p01",
+  "hanja": "物價",
+  "en": "price level",
   "title": "물가",
   "domain": "prices",
   "one": "여러 상품과 서비스의 가격을 한데 모아 본 전반적인 가격 수준을 말한다."
  },
  {
   "id": "p02",
+  "hanja": "所得·消費·貯蓄",
+  "en": "income, consumption and saving",
   "title": "소득·소비·저축",
   "domain": "work",
   "one": "번 돈(소득)을 쓰는 몫(소비)과 남기는 몫(저축)으로 나누는 살림의 기본 관계를 말한다."
  },
  {
   "id": "p03",
+  "hanja": "通貨",
+  "en": "money",
   "title": "돈(통화)",
   "domain": "money",
   "one": "상품을 사고 빚을 갚는 데 쓰이며, 값을 재는 단위이자 가치를 저장하는 수단이다."
  },
  {
   "id": "p04",
+  "hanja": "金利",
+  "en": "interest rate",
   "title": "금리",
   "domain": "money",
   "one": "돈을 빌려 쓰는 값으로, 빌린 돈에 일정 기간마다 붙는 이자의 비율로 나타낸다."
  },
  {
   "id": "p05",
+  "hanja": "金融",
+  "en": "finance",
   "title": "금융",
   "domain": "finance",
   "one": "자금이 남는 쪽에서 모자라는 쪽으로 돈을 빌려주고 빌리는 일과, 그 일을 하는 회사와 시장을 말한다."
  },
  {
   "id": "p06",
+  "hanja": "金融市場",
+  "en": "financial market",
   "title": "금융시장",
   "domain": "markets",
   "one": "채권, 주식, 외환, 파생상품 같은 금융상품이 거래되어 가격이 정해지는 시장을 말한다."
  },
  {
   "id": "p07",
+  "hanja": "債券",
+  "en": "bond",
   "title": "채권",
   "domain": "markets",
   "one": "돈을 빌린 쪽이 정해진 이자와 원금을 갚겠다고 약속한 증서를 말한다."
  },
  {
   "id": "p08",
+  "hanja": "株式",
+  "en": "stock",
   "title": "주식",
   "domain": "markets",
   "one": "회사의 소유권을 잘게 나눈 몫으로, 이익을 나눠 받을 권리와 의결권이 따른다."
  },
  {
   "id": "p09",
+  "hanja": "不動産",
+  "en": "real estate",
   "title": "부동산",
   "domain": "markets",
   "one": "토지와 건물을 말한다. 사는 곳이면서 가계가 가장 큰 대출을 지는 자산이다."
  },
  {
   "id": "p10",
+  "hanja": "財政",
+  "en": "public finance",
   "title": "재정",
   "domain": "gov",
   "one": "정부가 세금을 걷고 지출하며, 모자라면 빌리는 나라 살림을 말한다."
  },
  {
   "id": "p11",
+  "hanja": "換率",
+  "en": "exchange rate",
   "title": "환율",
   "domain": "world",
   "one": "한 나라의 돈을 다른 나라의 돈으로 바꿀 때의 교환 비율을 말한다."
  },
  {
   "id": "p12",
+  "hanja": "貿易",
+  "en": "trade",
   "title": "무역",
   "domain": "world",
   "one": "나라 사이에 상품과 서비스를 사고파는 일을 말한다."
  },
  {
   "id": "p13",
+  "hanja": "需要·供給",
+  "en": "demand and supply",
   "title": "수요와 공급",
   "domain": "tools",
   "one": "사려는 양과 팔려는 양을 말한다. 둘이 만나는 곳에서 가격과 거래량이 정해진다."

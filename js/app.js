@@ -15,13 +15,14 @@ function esc(s) {
   }[c]));
 }
 
+function glossText(t) {
+  return [t.hanja, t.en].filter(Boolean).map(esc).join(" · ");
+}
 function glossLine(t, tag) {
-  const bits = [];
-  if (t.hanja) bits.push(esc(t.hanja));
-  if (t.en) bits.push("(" + esc(t.en) + ")");
-  if (!bits.length) return "";
-  const name = tag || "p";
-  return `<${name} class="gloss">${bits.join(" ")}</${name}>`;
+  const g = glossText(t);
+  if (!g) return "";
+  const name = tag || "span";
+  return `<${name} class="title-gloss">${g}</${name}>`;
 }
 
 const terms = () => window.TERMS || [];
@@ -281,6 +282,13 @@ function markButton(id, done) {
   return `<button class="btn" type="button" id="mark" data-id="${esc(id)}">${done ? "읽음 표시를 지우기" : "읽음으로 표시"}</button>`;
 }
 
+function withGloss(html) {
+  return html.replace(/<h3><a href="#\/term\/([tp]\d+)">([^<]*)<\/a><\/h3>/g, (m, id, title) => {
+    const n = node(id);
+    return `<h3><a href="#/term/${id}">${title}</a>${n ? glossLine(n) : ""}</h3>`;
+  });
+}
+
 function articleView(id) {
   const a = articles().find((x) => x.id === id);
   if (!a) return `<h1>글을 찾지 못했다.</h1><p><a href="#/learn">층별 목록으로</a></p>`;
@@ -301,7 +309,7 @@ function articleView(id) {
         ${up ? `<a class="chip" href="#/read/${esc(up.id)}">↑ ${up.layer}층 · ${esc(domainName(up.domain))}</a>` : ""}
         ${down ? `<a class="chip" href="#/read/${esc(down.id)}">↓ ${down.layer}층 · ${esc(domainName(down.domain))}</a>` : ""}
       </div>
-      <div class="article">${a.html}</div>
+      <div class="article">${withGloss(a.html)}</div>
       ${ls.length ? `<h2>계산으로 다시 보기</h2><div class="chips">${ls.map((l) => `<a class="chip" href="#/lesson/${esc(l.id)}">${esc(l.no)} ${esc(l.title)}</a>`).join("")}</div>` : ""}
       <div class="row">${markButton(a.id, s.lessons.includes(a.id))}</div>
       <div class="pager">
@@ -396,8 +404,7 @@ function termView(id) {
     <article class="lesson">
       <p class="kicker">${layerTag(id)}${t.pillar ? " · 기둥 개념" : ""}</p>
       ${crumbs.length ? `<p class="crumbs">${crumbs.join(" › ")} › <span>${esc(t.title)}</span></p>` : ""}
-      <h1>${esc(t.title)}</h1>
-      ${glossLine(t)}
+      <h1>${esc(t.title)}${glossLine(t)}</h1>
       <p class="dek">${esc(t.one)}</p>
       ${(t.body || "").split(/(?<=다\.|요\.|까\.|죠\.|니다\.)\s+/).filter(Boolean).map((p) => `<p>${esc(p)}</p>`).join("")}
       ${t.pillar ? `<div class="note"><p class="note-kicker">기둥 개념</p><p>이 말은 『800선』의 표제어가 아니다. 아래의 말들을 한데 묶으려고 이 사이트가 세운 큰 개념이며, 자세한 설명은 1층 글에 있다.</p></div>` : ""}

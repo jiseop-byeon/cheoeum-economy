@@ -55,10 +55,10 @@ const PATH = [
 ];
 
 const LAYERS = {
-  1: { name: "큰 개념", line: "가장 중요하고 가장 쉬운 말. 여기서 경제 전체를 한 번 거칠게 본다." },
+  1: { name: "큰 개념", line: "가장 중요하고 가장 쉬운 개념. 여기서 경제 전체를 한 번 거칠게 본다." },
   2: { name: "작동 원리", line: "큰 개념이 어떻게 움직이는지. 뉴스 문장의 대부분이 이 층에서 읽힌다." },
-  3: { name: "제도와 도구", line: "실제로 쓰는 지표, 규제, 상품, 기구. 정책 보고서가 이 층의 말로 쓰인다." },
-  4: { name: "세부", line: "특수한 변형, 고유한 기구와 협정, 지난 사건, 새로 생긴 말." }
+  3: { name: "제도와 도구", line: "실제로 쓰는 지표, 규제, 상품, 기구. 정책 보고서가 이 층의 용어로 쓰인다." },
+  4: { name: "세부", line: "특수한 변형, 고유한 기구와 협정, 지난 사건, 새로 생긴 용어." }
 };
 
 const domainName = (id) => domains().find((d) => d.id === id)?.name || id;
@@ -214,7 +214,7 @@ function home() {
   return `
     <section class="landing">
       <h1>경제를 위에서부터 읽는다.</h1>
-      <p class="dek">가장 중요한 개념에서 시작해 세부까지, 『경제금융용어 800선』의 787개 말을 네 층으로 내려간다.</p>
+      <p class="dek">가장 중요한 개념에서 시작해 세부까지, 『경제금융용어 800선』의 787개 용어를 네 층으로 내려간다.</p>
       <div class="row">
         ${next ? `<a class="btn" href="#/read/${esc(next.id)}">${started ? "이어서 읽기" : "1층부터 읽기"}</a>` : ""}
         <a class="btn-quiet" href="#/learn">전체 목록</a>
@@ -338,7 +338,7 @@ function lessonView(id) {
       <p class="dek">${esc(l.dek)}</p>
       ${l.why ? `<p class="bridge"><span class="bridge-kicker">이 강의가 다루는 것</span>${esc(l.why)}</p>` : ""}
       ${l.html}
-      ${cores ? `<h2>이 강의의 말</h2><div class="chips">${cores}</div>` : ""}
+      ${cores ? `<h2>이 강의의 용어</h2><div class="chips">${cores}</div>` : ""}
       ${art ? `<p class="meta"><a href="#/read/${esc(art.id)}">2층 · ${esc(domainName(l.domain))} 글로 돌아가기</a></p>` : ""}
       <div class="row">${markButton(l.id, s.lessons.includes(l.id))}</div>
       <div class="pager">
@@ -361,8 +361,8 @@ function termsView(arg) {
     .concat([1, 2, 3, 4].map((l) => `<button class="chip" type="button" data-layer="${l}" aria-pressed="false">${l}층</button>`)).join("");
   return `
     <p class="kicker">용어 ${terms().length} · 기둥 개념 ${pillars().length}</p>
-    <h1>말을 찾고, 위아래로 옮겨 간다.</h1>
-    <p class="dek">표제어는 한국은행 『경제금융용어 800선』(2026)을 따른다. 설명은 이 사이트가 처음 공부하는 사람을 위해 따로 쓴 문장이다. 기둥 개념은 책의 표제어가 아니라 아래 말들을 묶으려고 세운 큰 말이다.</p>
+    <h1>용어를 찾고, 위아래로 옮겨 간다.</h1>
+    <p class="dek">표제어는 한국은행 『경제금융용어 800선』(2026)을 따른다. 설명은 이 사이트가 처음 공부하는 사람을 위해 따로 쓴 문장이다. 기둥 개념은 책의 표제어가 아니라 아래 용어들을 묶으려고 세운 큰 개념이다.</p>
     <input class="search" id="q" type="search" placeholder="예: DSR, 환율, 기준금리" value="${esc(q)}" aria-label="용어 검색">
     <div class="chips" id="layers">${layerChips}</div>
     <div class="chips" id="filters">${domainChips}</div>
@@ -384,7 +384,7 @@ function paintTerms(domain, layer) {
       <strong>${esc(t.title)}${glossLine(t, "span")}</strong>
       <span class="tag">${layerTag(t.id)}${t.pillar ? " · 기둥" : ""}</span>
       <span>${esc(t.one)}</span>
-    </a>`).join("") || `<p>해당하는 말이 없다.</p>`;
+    </a>`).join("") || `<p>해당하는 용어가 없다.</p>`;
   if (list.length > 400) host.insertAdjacentHTML("beforeend", `<p class="meta">앞 400개만 보여 준다. 검색어를 더 좁히면 나머지를 찾을 수 있다.</p>`);
 }
 
@@ -407,13 +407,13 @@ function termView(id) {
       <h1>${esc(t.title)}${glossLine(t)}</h1>
       <p class="dek">${esc(t.one)}</p>
       ${(t.body || "").split(/(?<=다\.|요\.|까\.|죠\.|니다\.)\s+/).filter(Boolean).map((p) => `<p>${esc(p)}</p>`).join("")}
-      ${t.pillar ? `<div class="note"><p class="note-kicker">기둥 개념</p><p>이 말은 『800선』의 표제어가 아니다. 아래의 말들을 한데 묶으려고 이 사이트가 세운 큰 개념이며, 자세한 설명은 1층 글에 있다.</p></div>` : ""}
+      ${t.pillar ? `<div class="note"><p class="note-kicker">기둥 개념</p><p>이 개념은 『800선』의 표제어가 아니다. 아래의 용어들을 한데 묶으려고 이 사이트가 세운 큰 개념이며, 자세한 설명은 1층 글에 있다.</p></div>` : ""}
       ${t.watch ? `<div class="note"><p class="note-kicker">헷갈리기 쉬운 점</p><p>${esc(t.watch)}</p></div>` : ""}
       ${t.page ? `<p class="source-line">원문: 한국은행 『경제금융용어 800선』(2026) ${t.page}쪽 · <a href="${BOOK_PDF}#page=${t.page + PDF_OFFSET}" target="_blank" rel="noopener">PDF에서 이 쪽 열기</a> · <a href="${BOOK_PAGE}" target="_blank" rel="noopener">한국은행 자료실</a></p>` : ""}
       ${kids.length ? `<h2>더 깊이</h2><div class="chips">${kids.map((k) => `<a class="chip" href="#/term/${esc(k)}">${esc(node(k)?.title || k)} <small>${layerOf(k)}층</small></a>`).join("")}</div>` : ""}
-      ${rel ? `<h2>옆에 두면 좋은 말</h2><div class="chips">${rel}</div>` : ""}
+      ${rel ? `<h2>함께 보면 좋은 용어</h2><div class="chips">${rel}</div>` : ""}
       <div class="row">
-        ${art ? `<a class="btn" href="#/read/${esc(art.id)}">이 말을 설명하는 글 · ${layer}층 ${esc(domainName(art.domain))}</a>` : ""}
+        ${art ? `<a class="btn" href="#/read/${esc(art.id)}">이 용어를 설명하는 글 · ${layer}층 ${esc(domainName(art.domain))}</a>` : ""}
         ${lesson ? `<a class="btn-quiet" href="#/lesson/${esc(lesson.id)}">계산 강의 ${esc(lesson.no)} ${esc(lesson.title)}</a>` : ""}
       </div>
     </article>`;
@@ -433,7 +433,7 @@ function sources() {
       ${body}
       <div class="note">
         <p class="note-kicker">학습 범위</p>
-        <p>표제어 787개는 한국은행이 2026년 1월에 발간한 『경제금융용어 800선』의 표제어이다. 책 한 권으로 세면 800선이고, 표제어 가운데 둘을 슬래시로 묶은 항목이 있어 이 사이트의 카드 수는 787이다. 기둥 개념 ${pillars().length}개는 층을 세우려고 이 사이트가 더한 말이다. 원문은 한국은행 경제교육 자료와 정부간행물 안내에서 볼 수 있다. 이 사이트는 그 해설을 옮기지 않았다.</p>
+        <p>표제어 787개는 한국은행이 2026년 1월에 발간한 『경제금융용어 800선』의 표제어이다. 책 한 권으로 세면 800선이고, 표제어 가운데 둘을 슬래시로 묶은 항목이 있어 이 사이트의 카드 수는 787이다. 기둥 개념 ${pillars().length}개는 층을 세우려고 이 사이트가 더한 개념이다. 원문은 한국은행 경제교육 자료와 정부간행물 안내에서 볼 수 있다. 이 사이트는 그 해설을 옮기지 않았다.</p>
       </div>
     </article>`;
 }

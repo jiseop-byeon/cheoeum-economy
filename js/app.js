@@ -256,7 +256,7 @@ function home() {
   const firstOf = (l) => order.find((a) => a.layer === l);
   return `
     <section class="landing">
-      <h1>경제를 탑다운으로 공부한다.</h1>
+      <h1>탑다운으로 공부하는 경제교재</h1>
       <p class="dek">가장 중요한 개념에서 시작해 세부까지, 『경제금융용어 800선』의 787개 용어를 네 층으로 내려간다.</p>
       <div class="row">
         ${next ? `<a class="btn" href="#/read/${esc(next.id)}">${started ? "이어서 읽기" : "1층부터 읽기"}</a>` : ""}

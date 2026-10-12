@@ -30,7 +30,7 @@ python3 -m http.server 8765
 
 ## 지금 숫자 (한국은행 ECOS)
 
-용어 카드의 "지금 숫자"와 "한국은행 통계용어사전의 정의"는 한국은행 경제통계시스템(ECOS) Open API에서 받은 값이다(`js/ecos.js`). 약관에 따라 출처를 표시한다.
+용어 카드와 첫 화면의 "지금 숫자"는 한국은행 경제통계시스템(ECOS) Open API에서 받은 값이다(`js/ecos.js`). 약관에 따라 출처를 표시한다.
 
 ```bash
 node scripts/fetch-ecos.js

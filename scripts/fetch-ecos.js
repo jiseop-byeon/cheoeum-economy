@@ -1,4 +1,4 @@
-// 한국은행 ECOS Open API에서 100대 통계지표와 통계용어사전을 받아 js/ecos.js로 저장한다.
+// 한국은행 ECOS Open API에서 100대 통계지표를 받아 js/ecos.js로 저장한다.
 // 인증키는 저장소 밖 파일(.ecos-key, .gitignore에 있음) 또는 환경변수 ECOS_KEY에서 읽는다.
 // 실행: node scripts/fetch-ecos.js
 const fs = require("fs");
@@ -80,7 +80,6 @@ async function get(url) {
   if (!r.ok) throw new Error(r.status + " " + url.replace(KEY, "KEY"));
   return r.json();
 }
-const norm = (s) => s.replace(/\(.*?\)/g, "").replace(/[\s·]/g, "").toLowerCase();
 
 (async () => {
   global.window = {};
@@ -122,24 +121,14 @@ const norm = (s) => s.replace(/\(.*?\)/g, "").replace(/[\s·]/g, "").toLowerCase
   const t504 = T.find((x) => x.title === "인플레이션");
   if (t504) links[t504.id] = [CPI_RATE, "소비자물가지수"].filter((n) => byName.has(n));
 
-  // 통계용어사전: 카드 제목(슬래시로 나뉜 각 부분 포함)과 이름이 같은 항목만 붙인다.
-  const words = (await get(`${API}/StatisticWord/${KEY}/json/kr/1/2000/%25`)).StatisticWord.row;
-  const wmap = new Map(words.map((w) => [norm(w.WORD), w]));
-  const glossary = {};
-  for (const t of T) {
-    const hits = t.title.split("/").map(norm).map((k) => wmap.get(k)).filter(Boolean);
-    if (hits.length) glossary[t.id] = hits.map((w) => ({ word: w.WORD.trim(), text: w.CONTENT.trim() }));
-  }
-
   const out = {
     fetched: `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`,
     stats: Object.fromEntries(stats.map((s) => [s.name, s])),
-    links,
-    glossary
+    links
   };
   fs.writeFileSync(path.join(ROOT, "js/ecos.js"),
     "// 한국은행 ECOS Open API에서 받은 값. scripts/fetch-ecos.js가 만든다. 출처: 한국은행 경제통계시스템(ECOS).\n" +
     "window.ECOS = " + JSON.stringify(out, null, 1) + ";\n");
-  console.log(`stats ${stats.length}, linked terms ${Object.keys(links).length}, glossary terms ${Object.keys(glossary).length}`);
+  console.log(`stats ${stats.length}, linked terms ${Object.keys(links).length}`);
   if (missing.length) console.log("missing:", missing.join(", "));
 })().catch((e) => { console.error(e.message); process.exit(1); });

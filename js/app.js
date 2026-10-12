@@ -461,12 +461,6 @@ function ecosBox(id) {
   const meet = rm && rm.last ? `<p class="meeting-line">최근 결정: ${esc(rm.last.name)}, ${esc(rm.last.date.replace(/-/g, "."))}, ${esc(rm.last.result)}.${rm.next ? ` 다음 통화정책방향 결정 회의는 ${esc(rm.next.replace(/-/g, "."))} 예정이다.` : ""}</p>` : "";
   return `<div class="note stat-box"><p class="note-kicker">지금 숫자</p><ul class="stat-list">${rows}</ul>${meet}<p class="meta">출처: 한국은행 경제통계시스템(ECOS) 100대 통계지표, ${esc(E.fetched)} 조회. 발표마다 바뀐다.</p></div>`;
 }
-function glossaryBox(id) {
-  const E = window.ECOS;
-  const g = E && E.glossary && E.glossary[id];
-  if (!g) return "";
-  return `<div class="note"><p class="note-kicker">한국은행 통계용어사전의 정의</p>${g.map((w) => `<p>${g.length > 1 ? `<strong>${esc(w.word)}</strong> ` : ""}${esc(w.text)}</p>`).join("")}<p class="meta">출처: 한국은행 경제통계시스템(ECOS) 통계용어사전</p></div>`;
-}
 
 function termView(id) {
   const t = byId(id);
@@ -489,7 +483,6 @@ function termView(id) {
       ${(t.body || "").split(/(?<=다\.|요\.|까\.|죠\.|니다\.)\s+/).filter(Boolean).map((p) => `<p>${esc(p)}</p>`).join("")}
       ${t.pillar ? `<div class="note"><p class="note-kicker">기둥 개념</p><p>이 개념은 『800선』의 표제어가 아니다. 아래의 용어들을 한데 묶으려고 이 사이트가 세운 큰 개념이며, 자세한 설명은 1층 글에 있다.</p></div>` : ""}
       ${t.watch ? `<div class="note"><p class="note-kicker">헷갈리기 쉬운 점</p><p>${esc(t.watch)}</p></div>` : ""}
-      ${glossaryBox(id)}
       ${ecosBox(id)}
       ${t.page ? `<p class="source-line">원문: 한국은행 『경제금융용어 800선』(2026) ${t.page}쪽 · <a href="${BOOK_PDF}#page=${t.page + PDF_OFFSET}" target="_blank" rel="noopener">PDF에서 이 쪽 열기</a> · <a href="${BOOK_PAGE}" target="_blank" rel="noopener">한국은행 자료실</a></p>` : ""}
       ${kids.length ? `<h2>더 깊이</h2><div class="chips">${kids.map((k) => `<a class="chip" href="#/term/${esc(k)}">${esc(node(k)?.title || k)} <small>${layerOf(k)}층</small></a>`).join("")}</div>` : ""}

@@ -217,6 +217,15 @@ function atlasHtml() {
       </figure>`;
 }
 
+function rateMeeting() {
+  const M = window.MEETINGS && window.MEETINGS.baseRate;
+  if (!M) return null;
+  const now = today();
+  const next = (M.schedule || []).find((d) => d > now);
+  const md = (d) => `${Number(d.slice(5, 7))}.${Number(d.slice(8))}`;
+  return { last: M.last, next, md };
+}
+
 function homeStats() {
   const E = window.ECOS;
   if (!E || !E.stats) return "";
@@ -231,7 +240,9 @@ function homeStats() {
   const tiles = pick.map(([key, label, id]) => {
     const st = E.stats[key];
     if (!st) return "";
-    return `<a class="now-tile" href="#/term/${id}"><span class="now-label">${esc(label)}</span><strong>${esc(ecosValue(st))}</strong><span class="now-when">${esc(ecosCycle(st.cycle))}</span></a>`;
+    const rm = id === "t154" ? rateMeeting() : null;
+    const when = rm && rm.last ? `${rm.last.short}(제${rm.last.name.match(/제(\d+)차/)?.[1] || "?"}차) 결정${rm.next ? ` · 다음 ${rm.md(rm.next)}` : ""}` : ecosCycle(st.cycle);
+    return `<a class="now-tile" href="#/term/${id}"><span class="now-label">${esc(label)}</span><strong>${esc(ecosValue(st))}</strong><span class="now-when">${esc(when)}</span></a>`;
   }).join("");
   return `<section class="now"><p class="kicker">지금 숫자</p><div class="now-grid">${tiles}</div><p class="meta">한국은행 ECOS 100대 통계지표, ${esc(E.fetched)} 조회. 칸을 누르면 그 용어로 간다.</p></section>`;
 }
@@ -446,7 +457,9 @@ function ecosBox(id) {
   if (!E || !E.links || !E.links[id] || !E.links[id].length) return "";
   const rows = E.links[id].map((n) => E.stats[n]).filter(Boolean).map((st) =>
     `<li><span class="stat-name">${esc(st.name)}</span><strong>${esc(ecosValue(st))}</strong><span class="stat-when">${esc(ecosCycle(st.cycle))}</span></li>`).join("");
-  return `<div class="note stat-box"><p class="note-kicker">지금 숫자</p><ul class="stat-list">${rows}</ul><p class="meta">출처: 한국은행 경제통계시스템(ECOS) 100대 통계지표, ${esc(E.fetched)} 조회. 발표마다 바뀐다.</p></div>`;
+  const rm = id === "t154" ? rateMeeting() : null;
+  const meet = rm && rm.last ? `<p class="meeting-line">최근 결정: ${esc(rm.last.name)}, ${esc(rm.last.date.replace(/-/g, "."))}, ${esc(rm.last.result)}.${rm.next ? ` 다음 통화정책방향 결정 회의는 ${esc(rm.next.replace(/-/g, "."))} 예정이다.` : ""}</p>` : "";
+  return `<div class="note stat-box"><p class="note-kicker">지금 숫자</p><ul class="stat-list">${rows}</ul>${meet}<p class="meta">출처: 한국은행 경제통계시스템(ECOS) 100대 통계지표, ${esc(E.fetched)} 조회. 발표마다 바뀐다.</p></div>`;
 }
 function glossaryBox(id) {
   const E = window.ECOS;

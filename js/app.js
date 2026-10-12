@@ -217,6 +217,25 @@ function atlasHtml() {
       </figure>`;
 }
 
+function homeStats() {
+  const E = window.ECOS;
+  if (!E || !E.stats) return "";
+  const pick = [
+    ["한국은행 기준금리", "기준금리", "t154"],
+    ["원/달러 환율(종가)", "원/달러 환율", "p11"],
+    ["소비자물가 상승률(전년 동월 대비, 계산값)", "물가 상승률", "t347"],
+    ["경제성장률(실질, 계절조정 전기대비)", "경제성장률(전기 대비)", "t031"],
+    ["실업률", "실업률", "t403"],
+    ["경상수지", "경상수지(한 달)", "t028"]
+  ];
+  const tiles = pick.map(([key, label, id]) => {
+    const st = E.stats[key];
+    if (!st) return "";
+    return `<a class="now-tile" href="#/term/${id}"><span class="now-label">${esc(label)}</span><strong>${esc(ecosValue(st))}</strong><span class="now-when">${esc(ecosCycle(st.cycle))}</span></a>`;
+  }).join("");
+  return `<section class="now"><p class="kicker">지금 숫자</p><div class="now-grid">${tiles}</div><p class="meta">한국은행 ECOS 100대 통계지표, ${esc(E.fetched)} 조회. 칸을 누르면 그 용어로 간다.</p></section>`;
+}
+
 function home() {
   const s = load();
   const order = readingOrder();
@@ -242,6 +261,7 @@ function home() {
           </a></li>`;
         }).join("")}
       </ol>
+      ${homeStats()}
       <form class="home-search" id="home-search" role="search">
         <input class="search" id="hq" type="search" placeholder="용어 찾기: DSR, 환율, 기준금리" aria-label="용어 검색">
       </form>

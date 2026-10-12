@@ -291,6 +291,13 @@ th { font-weight: 650; }
 .ladder-body strong { display: block; font-family: var(--serif); font-size: 20px; }
 .ladder-body span { color: var(--muted); font-size: 15px; }
 .ladder-count { font-family: var(--mono); font-size: 14px; color: var(--muted); }
+.now { margin-top: 40px; }
+.now-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 6px 0 8px; }
+.now-tile { display: flex; flex-direction: column; gap: 2px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); text-decoration: none; color: var(--text); }
+.now-tile:hover { border-color: var(--line-strong); }
+.now-label { color: var(--muted); font-size: 13px; }
+.now-tile strong { font-family: var(--mono); font-size: 20px; font-weight: 600; }
+.now-when { color: var(--muted); font-size: 12px; }
 .home-search { margin-top: 36px; }
 .home-search .search { width: 100%; }
 .atlas .atlas-board { margin-top: 12px; }
@@ -349,6 +356,7 @@ h1 .title-gloss { display: block; margin-left: 0; margin-top: 4px; }
   h1 { font-size: 34px; }
   .term-link { grid-template-columns: 1fr; }
   .landing { padding-top: 28px; }
+  .now-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .toc a { grid-template-columns: 1fr auto; gap: 2px 10px; }
   .toc-domain { grid-column: 1 / -1; font-size: 13px; }
   .stat-list li { grid-template-columns: 1fr auto; }

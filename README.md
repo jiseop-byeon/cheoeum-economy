@@ -27,3 +27,13 @@ python3 -m http.server 8765
 빌드 단계는 없다. `index.html`이 `css/site.css`와 `js/` 아래 파일을 그대로 읽는다.
 
 색은 `css/site.css` 맨 위 두 블록에만 있다. `:root`가 기본(어두운 남색), `:root[data-theme="light"]`가 밝은 짝이다. 상단의 밝게/어둡게 버튼이 둘을 바꾸고, 고른 쪽은 이 브라우저에 남는다.
+
+## 지금 숫자 (한국은행 ECOS)
+
+용어 카드의 "지금 숫자"와 "한국은행 통계용어사전의 정의"는 한국은행 경제통계시스템(ECOS) Open API에서 받은 값이다(`js/ecos.js`). 약관에 따라 출처를 표시한다.
+
+```bash
+node scripts/fetch-ecos.js
+```
+
+인증키는 저장소에 올리지 않는다. 루트의 `.ecos-key` 파일(`.gitignore`에 있음)이나 환경변수 `ECOS_KEY`에 둔다. 카드와 지표의 연결은 `scripts/fetch-ecos.js`의 `MAP`에서 고친다.

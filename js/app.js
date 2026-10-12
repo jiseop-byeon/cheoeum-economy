@@ -403,6 +403,38 @@ function paintTerms(domain, layer) {
   if (list.length > 400) host.insertAdjacentHTML("beforeend", `<p class="meta">앞 400개만 보여 준다. 검색어를 더 좁히면 나머지를 찾을 수 있다.</p>`);
 }
 
+
+function ecosCycle(c) {
+  const s = String(c || "");
+  if (/^\d{8}$/.test(s)) return `${s.slice(0, 4)}.${Number(s.slice(4, 6))}.${Number(s.slice(6))}`;
+  if (/^\d{6}$/.test(s)) return `${s.slice(0, 4)}년 ${Number(s.slice(4))}월`;
+  if (/^\d{4}Q\d$/.test(s)) return `${s.slice(0, 4)}년 ${s.slice(5)}분기`;
+  if (/^\d{4}$/.test(s)) return `${s}년`;
+  return s;
+}
+function ecosValue(st) {
+  const f = (v, d) => v.toLocaleString("ko-KR", { maximumFractionDigits: d });
+  const u = st.unit || "";
+  const conv = { "십억원": [1e3, "조 원"], "백만원": [1e6, "조 원"], "백만달러": [1e2, "억 달러"], "천달러": [1e5, "억 달러"], "천명": [10, "만 명"], "조원": [1, "조 원"] };
+  if (conv[u]) return `${f(st.value / conv[u][0], 1)}${conv[u][1]}`;
+  if (u.includes("=")) return `${f(st.value, 2)} (${u})`;
+  if (u === "%") return `${f(st.value, 3)}%`;
+  return `${f(st.value, 2)}${u ? " " + u : ""}`;
+}
+function ecosBox(id) {
+  const E = window.ECOS;
+  if (!E || !E.links || !E.links[id] || !E.links[id].length) return "";
+  const rows = E.links[id].map((n) => E.stats[n]).filter(Boolean).map((st) =>
+    `<li><span class="stat-name">${esc(st.name)}</span><strong>${esc(ecosValue(st))}</strong><span class="stat-when">${esc(ecosCycle(st.cycle))}</span></li>`).join("");
+  return `<div class="note stat-box"><p class="note-kicker">지금 숫자</p><ul class="stat-list">${rows}</ul><p class="meta">출처: 한국은행 경제통계시스템(ECOS) 100대 통계지표, ${esc(E.fetched)} 조회. 발표마다 바뀐다.</p></div>`;
+}
+function glossaryBox(id) {
+  const E = window.ECOS;
+  const g = E && E.glossary && E.glossary[id];
+  if (!g) return "";
+  return `<div class="note"><p class="note-kicker">한국은행 통계용어사전의 정의</p>${g.map((w) => `<p>${g.length > 1 ? `<strong>${esc(w.word)}</strong> ` : ""}${esc(w.text)}</p>`).join("")}<p class="meta">출처: 한국은행 경제통계시스템(ECOS) 통계용어사전</p></div>`;
+}
+
 function termView(id) {
   const t = byId(id);
   if (!t) return `<h1>용어를 찾지 못했다.</h1>`;
@@ -424,6 +456,8 @@ function termView(id) {
       ${(t.body || "").split(/(?<=다\.|요\.|까\.|죠\.|니다\.)\s+/).filter(Boolean).map((p) => `<p>${esc(p)}</p>`).join("")}
       ${t.pillar ? `<div class="note"><p class="note-kicker">기둥 개념</p><p>이 개념은 『800선』의 표제어가 아니다. 아래의 용어들을 한데 묶으려고 이 사이트가 세운 큰 개념이며, 자세한 설명은 1층 글에 있다.</p></div>` : ""}
       ${t.watch ? `<div class="note"><p class="note-kicker">헷갈리기 쉬운 점</p><p>${esc(t.watch)}</p></div>` : ""}
+      ${glossaryBox(id)}
+      ${ecosBox(id)}
       ${t.page ? `<p class="source-line">원문: 한국은행 『경제금융용어 800선』(2026) ${t.page}쪽 · <a href="${BOOK_PDF}#page=${t.page + PDF_OFFSET}" target="_blank" rel="noopener">PDF에서 이 쪽 열기</a> · <a href="${BOOK_PAGE}" target="_blank" rel="noopener">한국은행 자료실</a></p>` : ""}
       ${kids.length ? `<h2>더 깊이</h2><div class="chips">${kids.map((k) => `<a class="chip" href="#/term/${esc(k)}">${esc(node(k)?.title || k)} <small>${layerOf(k)}층</small></a>`).join("")}</div>` : ""}
       ${rel ? `<h2>함께 보면 좋은 용어</h2><div class="chips">${rel}</div>` : ""}

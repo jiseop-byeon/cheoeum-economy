@@ -5,6 +5,10 @@ function load() {
     const s = JSON.parse(localStorage.getItem(KEY));
     if (s && Array.isArray(s.lessons)) {
       if (!s.readAt || typeof s.readAt !== "object") s.readAt = {};
+      // 예전 기록은 날짜 하나였다. 여러 번 읽은 날짜를 모두 남기도록 배열로 바꾼다.
+      for (const k of Object.keys(s.readAt)) {
+        if (!Array.isArray(s.readAt[k])) s.readAt[k] = s.readAt[k] ? [s.readAt[k]] : [];
+      }
       return s;
     }
   } catch (_) {}
@@ -14,11 +18,16 @@ function today() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
-function readDate(s, id, long) {
-  const v = s.readAt && s.readAt[id];
-  if (!v) return "";
+function readDates(s, id) {
+  return (s.readAt && s.readAt[id]) || [];
+}
+function fmtDate(v, long) {
   const [y, m, d] = v.split("-").map(Number);
   return long ? `${y}년 ${m}월 ${d}일` : `${y}.${String(m).padStart(2, "0")}.${String(d).padStart(2, "0")}`;
+}
+function readDate(s, id, long) {
+  const ds = readDates(s, id);
+  return ds.length ? fmtDate(ds[ds.length - 1], long) : "";
 }
 function save(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (_) {} }
 
@@ -281,7 +290,11 @@ function home() {
 
 function learn() {
   const s = load();
-  const mark = (id) => s.lessons.includes(id) ? `<span class="toc-done">읽음${readDate(s, id) ? " " + readDate(s, id) : ""}</span>` : "";
+  const mark = (id) => {
+    if (!s.lessons.includes(id)) return "";
+    const n = readDates(s, id).length;
+    return `<span class="toc-done">${n > 1 ? n + "회독" : "읽음"}${readDate(s, id) ? " " + readDate(s, id) : ""}</span>`;
+  };
   const floor = (l) => {
     const rows = domains().map((d) => {
       const a = articleOf(d.id, l);
@@ -324,8 +337,13 @@ function mapView() {
 
 function markButton(id, done) {
   const s = load();
-  const when = done ? readDate(s, id, true) : "";
-  return `${when ? `<span class="meta read-when">${esc(when)}에 읽음</span>` : ""}<button class="btn${done ? "-quiet" : ""}" type="button" id="mark" data-id="${esc(id)}">${done ? "읽음 표시를 지우기" : "읽음으로 표시"}</button>`;
+  const ds = done ? readDates(s, id) : [];
+  if (!ds.length) return `<button class="btn" type="button" id="mark" data-id="${esc(id)}">읽음으로 표시</button>`;
+  const log = ds.map((d, i) => `${i + 1}회독 ${fmtDate(d)}`).join(" · ");
+  const todayDone = ds.includes(today());
+  return `<p class="meta read-log">${esc(log)}</p>`
+    + `<button class="btn${todayDone ? "-quiet" : ""}" type="button" id="mark" data-id="${esc(id)}"${todayDone ? " disabled" : ""}>${todayDone ? "오늘 읽음 기록됨" : "오늘 다시 읽음"}</button>`
+    + `<button class="btn-quiet" type="button" id="unmark" data-id="${esc(id)}">마지막 기록 지우기</button>`;
 }
 
 function withGloss(html) {
@@ -538,12 +556,21 @@ function render() {
   if (mark) mark.onclick = () => {
     const s = load();
     const id = mark.dataset.id;
-    if (s.lessons.includes(id)) {
-      s.lessons = s.lessons.filter((x) => x !== id);
+    const ds = readDates(s, id);
+    if (!ds.includes(today())) s.readAt[id] = ds.concat(today());
+    if (!s.lessons.includes(id)) s.lessons = s.lessons.concat(id);
+    save(s);
+    render();
+  };
+  const unmark = document.getElementById("unmark");
+  if (unmark) unmark.onclick = () => {
+    const s = load();
+    const id = unmark.dataset.id;
+    const ds = readDates(s, id).slice(0, -1);
+    if (ds.length) s.readAt[id] = ds;
+    else {
       delete s.readAt[id];
-    } else {
-      s.lessons = s.lessons.concat(id);
-      s.readAt[id] = today();
+      s.lessons = s.lessons.filter((x) => x !== id);
     }
     save(s);
     render();

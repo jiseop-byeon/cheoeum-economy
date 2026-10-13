@@ -226,6 +226,15 @@ h3 { font-size: 22px; margin: 26px 0 8px; }
   font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; margin: 0 0 8px; color: var(--accent-text);
 }
 .note-kicker { color: var(--warm); }
+.qa { border-top: 1px solid var(--line); padding: 2px 0; }
+.qa:last-of-type { border-bottom: 1px solid var(--line); }
+.qa summary { cursor: pointer; list-style: none; padding: 12px 28px 12px 0; position: relative; font-weight: 600; }
+.qa summary::-webkit-details-marker { display: none; }
+.qa summary::after { content: "+"; position: absolute; right: 4px; top: 10px; color: var(--accent-text); font-size: 18px; }
+.qa[open] summary::after { content: "\2212"; }
+.qa > p, .qa > div { margin-top: 0; }
+.qa > :last-child { margin-bottom: 16px; }
+.read-log { flex-basis: 100%; margin: 0; }
 .steps { margin: 8px 0; padding-left: 1.2em; }
 .result { font-family: var(--serif); font-size: 22px; margin: 8px 0 0; }
 .answer[hidden] { display: none; }
